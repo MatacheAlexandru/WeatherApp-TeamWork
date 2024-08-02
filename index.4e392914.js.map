@@ -1,0 +1,1 @@
+{"mappings":"AAAAA,SAASC,iBAAiB,oBAAoBC","sources":["src/index.js"],"sourcesContent":["document.addEventListener('DOMContentLoaded', async () => {});\n"],"names":["document","addEventListener","async"],"version":3,"file":"index.4e392914.js.map"}
