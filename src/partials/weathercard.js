@@ -28,11 +28,11 @@ export function displayWeatherDataOnCard(data) {
     weatherCardElement
   ) {
     cityNameElement.textContent = data.name;
-    temperatureElement.textContent = `${Math.round(data.main.temp)}`;
-    descriptionElement.innerHTML = `<img src="${getWeatherIconUrl(data.weather[0].icon)}" alt="${data.weather[0].description}" title="${data.weather[0].description}">`;
+    temperatureElement.textContent = `${data.main.temp} °C`;
+    descriptionElement.textContent = `${data.weather[0].description}`;
     humidityElement.textContent = `Humidity: ${data.main.humidity}%`;
-    minTempElement.textContent = `${Math.round(data.main.temp_min)} °C`;
-    maxTempElement.textContent = `${Math.round(data.main.temp_max)} °C`;
+    minTempElement.textContent = `${data.main.temp_min} °C`;
+    maxTempElement.textContent = `${data.main.temp_max} °C`;
 
     setBackgroundForCity(data.name);
     
@@ -51,28 +51,21 @@ export function displayWeatherDataOnCard(data) {
 export function displayFiveDayForecast(data) {
   const forecastContainer = document.getElementById('forecast-container');
   const chartContainer = document.getElementById('chart-container');
-  const forecastLocationElement = document.getElementById('forecast-location');
-
   forecastContainer.innerHTML = ''; 
 
-  forecastLocationElement.textContent = data.city.name;
-
   data.list.forEach((forecast, index) => {
-    if (index % 8 === 0) {
+    if (index % 8 === 0) { 
       const forecastElement = document.createElement('div');
       forecastElement.classList.add('forecast-day');
 
       const date = new Date(forecast.dt * 1000);
-      const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
-      const dateString = date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+      const dateString = date.toLocaleDateString();
 
       forecastElement.innerHTML = `
-        <h3 class="date">${dayName}</h3>
-        <p class="date">${dateString}</p>
-        <img src="${getWeatherIconUrl(forecast.weather[0].icon)}" alt="${forecast.weather[0].description}">
-        <p class="temp temp-min">${Math.round(forecast.main.temp_min)}°C</p>
-        <p class="temp temp-max">${Math.round(forecast.main.temp_max)}°C</p>
-        <p class="more-info">more info</p>
+        <h3>${dateString}</h3>
+        <p>Min: ${forecast.main.temp_min} °C</p>
+        <p>Max: ${forecast.main.temp_max} °C</p>
+        <p>${forecast.weather[0].description}</p>
       `;
 
       forecastContainer.appendChild(forecastElement);
@@ -80,18 +73,11 @@ export function displayFiveDayForecast(data) {
   });
 
   if (forecastContainer) {
-
-    forecastContainer.style.display = 'flex';
-    forecastContainer.style.justifyContent = 'space-around';
     forecastContainer.style.display = 'block';
   }
   if (chartContainer) {
     chartContainer.style.display = 'block';
   }
-}
-
-function getWeatherIconUrl(iconCode) {
-  return `https://openweathermap.org/img/wn/${iconCode}.png`;
 }
 
 export async function fetchAndDisplayWeatherForCity(city) {
