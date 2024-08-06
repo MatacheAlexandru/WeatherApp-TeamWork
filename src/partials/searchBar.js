@@ -1,4 +1,7 @@
-import { fetchAndDisplayWeatherForCity } from './weathercard.js';
+import {
+  fetchAndDisplayWeatherForCity,
+  fetchAndDisplayWeatherForLocation,
+} from './weathercard.js';
 
 function addToFavorites(city) {
   let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
@@ -42,9 +45,9 @@ function removeFromFavorites(city) {
 export function initializeSearch() {
   const cityInput = document.getElementById('city-input');
   const starIcon = document.getElementById('star-icon');
+  const locationIcon = document.getElementById('location-icon');
 
   if (cityInput) {
-    console.log('City input element found.');
     cityInput.addEventListener('keydown', function (event) {
       if (event.key === 'Enter') {
         event.preventDefault();
@@ -59,7 +62,6 @@ export function initializeSearch() {
   }
 
   if (starIcon) {
-    console.log('Star icon element found.');
     starIcon.addEventListener('click', () => {
       const city = cityInput.value.trim();
       if (city) {
@@ -68,6 +70,43 @@ export function initializeSearch() {
     });
   } else {
     console.warn('Star icon element not found.');
+  }
+
+  if (locationIcon) {
+ 
+    locationIcon.addEventListener('click', async () => {
+      // Adăugăm async aici pentru a putea folosi await
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async position => {
+            const { latitude, longitude } = position.coords;
+            const cityName = await fetchAndDisplayWeatherForLocation(
+              latitude,
+              longitude
+            );
+            if (cityName) {
+              loadAndRenderChart(cityName);
+            }
+          },
+          async error => {
+            console.error('Error getting location:', error);
+            const cityName = await fetchAndDisplayWeatherForCity('București');
+            if (cityName) {
+              loadAndRenderChart(cityName);
+            }
+          }
+        );
+      } else {
+        console.error('Geolocation is not supported by this browser');
+        const cityName = await fetchAndDisplayWeatherForCity('București'); // Aici trebuie să fie o funcție async pentru a folosi await
+        if (cityName) {
+          loadAndRenderChart(cityName);
+        }
+      }
+    });
+  } else {
+    console.warn('Location icon element not found.');
   }
 
   displayFavorites(); // Display favorites when the page loads
